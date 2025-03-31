@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <h2>&lt;om/&gt;</h2>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#connect">Contact Me</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="#home" onclick="toggleMenu()">Home</a>
+                <a href="#projects" onclick="toggleMenu()">Projects</a>
+                <a href="#skills" onclick="toggleMenu()">Skills</a>
+                <a href="#connect" onclick="toggleMenu()">Contact Me</a>
+            </div>
+        </nav>
+         
+    </header>
+
+    <section id="home">
+        <div class="hero">
+            <div class="hero-content">
+                <h1 style="color: white;">Hello, I'm <span class="highlight">Om Dahikar</span></h1>
+                <p style="color: white;">Web Developer & Cyber Security Expert</p>
+                <a target="_blank" href="#connect" class="cta-button">Get In Touch</a>
+            </div>
+            <div class="profile-image">
+                <img src="images/profile.png" alt="Om Dahikar">
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h1 style="color: white;">My Projects</h1>
+        <div class="project-grid">
+            <!-- Existing project cards remain unchanged -->
+            <div class="project-card">
+                <img src="images/project1.png" alt="Project 1">
+                <h3>Space Shooting Game</h3>
+                <p>using canvas</p>
+                <a target="_blank" href="projects/project1.html" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+                <img src="images/project2.png" alt="Project 2">
+                <h3>Library Management System</h3>
+                <p>using JavaScript and searching method</p>
+                <a target="_blank" href="projects/project2.html" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+                <img src="images/project3.png" alt="Project 3">
+                <h3>URL Shortener</h3>
+                <p>using tinyurl api we will modify the urls and make them shorter</p>
+                <a target="_blank" href="projects/project3.html" class="project-link">View Project</a>
+            </div>
+            <!-- New project cards -->
+            <div class="project-card">
+                <img src="images/project4.png" alt="Project 4">
+                <h3>file management system</h3>
+                <p>
+                    any filetype can be upload with login page and default credentials username=admin, password=admin123
+                </p>
+                <a target="_blank" href="projects/project4.html" class="project-link">View Project</a>
+            </div>
+            <div class="project-card">
+                <img src="images/project5.png" alt="Project 5">
+                <h3>web camera & Screen Share</h3>
+                <p>video recording, screen shot and downloading both in addition with presentation screen and sharing screen facility</p>
+                <a target="_blank" href="projects/project5.html" class="project-link">View Project</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <h1 style="color: white;">Skills & Experience</h1>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3>Frontend</h3>
+                <div class="skill-item">HTML5</div>
+                <div class="skill-item">CSS3</div>
+                <div class="skill-item">JavaScript</div>
+                <div class="skill-item">React</div>
+            </div>
+            <div class="skill-category">
+                <h3>Programming Languages</h3>
+                <div class="skill-item">C/C++</div>
+                <div class="skill-item">Python</div>
+                <div class="skill-item">Java</div>
+                <div class="skill-item">Assembly Language</div>
+            </div>
+            <div class="skill-category">
+                <h3>Operating Systems</h3>
+                <div class="skill-item">Windows</div>
+                <div class="skill-item">Linux</div>
+                <div class="skill-item">Kali Linux</div>
+                <div class="skill-item">Ubuntu</div>
+            </div>
+            <div class="skill-category">
+                <h3>Tools</h3>
+                <div class="skill-item">Git</div>
+                <div class="skill-item">VS Code</div>
+            </div>
+            <div class="skill-category">
+                <h3>Cyber Security</h3>
+                <div class="skill-item">Network Security</div>
+                <div class="skill-item">Penetration Testing</div>
+                <div class="skill-item">Security Auditing</div>
+                <div class="skill-item">Ethical Hacking</div>
+            </div>
+        </div>
+
+        <!-- New Certificates Section -->
+        <h1 class="certificates-title" style="color: white;">Certificates</h1>
+        <div class="certificates-container">
+            <div class="certificate-card">
+                <img src="images/cert1.jpg" alt="Web Development Certificate">
+                <div class="certificate-info">
+                    <h3>Raiders of the lost data event</h3>
+                    <p>17th-18th January, 2024</p>
+                    <a target="_blank" href="images/cert1.jpg" class="cert-link">View Certificate</a>
+                </div>
+            </div>
+            <div class="certificate-card">
+                <img src="images/cert2.jpg" alt="JavaScript Certificate">
+                <div class="certificate-info">
+                    <h3>Teachnook Internship</h3>
+                    <p>Certificate ID: TNK2404-074682 <br>
+                        Duration: 01/07/2024 - 30/08/2024</p>
+                    <a target="_blank" href="images/cert2.jpg" class="cert-link">View Certificate</a>
+                </div>
+            </div>
+            <div class="certificate-card">
+                <img src="images/cert3.jpg" alt="React Certificate">
+                <div class="certificate-info">
+                    <h3>Cyber Cell Club vit chennai</h3>
+                    <p>active participation in the HackSecure hosted by CyberTeam & Hack club on 21st October, 2024 embodying a commitment to advancing the frontiers of cybersecurity</p>
+                    <a target="_blank" href="images/cert3.jpg" class="cert-link">View Certificate</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add this before the connect section -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h1>Login to Connect</h1>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" id="loginEmail" placeholder="Your Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p id="loginMessage"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modify the connect section -->
+    <section id="connect">
+        <h1 style="color: white;">Let's Connect</h1>
+        <div id="connectContent" class="connect-container">
+            <div class="social-links">
+                <!-- Existing social links and contact form -->
+            </div>
+            <form class="contact-form" id="contactForm" onsubmit="sendEmail(event)">
+                <input type="text" id="name" placeholder="Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <input type="text" id="subject" placeholder="Subject" required>
+                <textarea id="message" placeholder="Type your message" required></textarea>
+            </form>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2025 Your Portfolio. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById("mobileMenu");
+            const hamburger = document.querySelector(".hamburger");
+            menu.classList.toggle("active");
+            hamburger.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

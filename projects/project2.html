@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .book-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .books-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .book-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .book-card p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .book-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .status-available {
+            color: #27ae60;
+        }
+
+        .status-borrowed {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Library Management System</h1>
+        </header>
+
+        <div class="book-form">
+            <h2>Add New Book</h2>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Author</label>
+                    <input type="text" id="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN</label>
+                    <input type="text" id="isbn" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" required>
+                        <option value="available">Available</option>
+                        <option value="borrowed">Borrowed</option>
+                    </select>
+                </div>
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search books..." onkeyup="searchBooks()">
+        </div>
+
+        <div class="books-container" id="booksContainer"></div>
+    </div>
+
+    <script>
+        let books = JSON.parse(localStorage.getItem('books')) || [];
+
+        function addBook(e) {
+            e.preventDefault();
+            
+            const book = {
+                id: Date.now(),
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                isbn: document.getElementById('isbn').value,
+                status: document.getElementById('status').value
+            };
+
+            books.push(book);
+            saveBooks();
+            displayBooks();
+            e.target.reset();
+        }
+
+        function deleteBook(id) {
+            books = books.filter(book => book.id !== id);
+            saveBooks();
+            displayBooks();
+        }
+
+        function toggleStatus(id) {
+            const book = books.find(book => book.id === id);
+            book.status = book.status === 'available' ? 'borrowed' : 'available';
+            saveBooks();
+            displayBooks();
+        }
+
+        function saveBooks() {
+            localStorage.setItem('books', JSON.stringify(books));
+        }
+
+        function displayBooks(booksToDisplay = books) {
+            const container = document.getElementById('booksContainer');
+            container.innerHTML = '';
+
+            booksToDisplay.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p><strong>Author:</strong> ${book.author}</p>
+                    <p><strong>ISBN:</strong> ${book.isbn}</p>
+                    <p><strong>Status:</strong> <span class="status-${book.status}">${book.status}</span></p>
+                    <div class="book-actions">
+                        <button onclick="toggleStatus(${book.id})">Toggle Status</button>
+                        <button class="delete-btn" onclick="deleteBook(${book.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(bookCard);
+            });
+        }
+
+        function searchBooks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredBooks = books.filter(book => 
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm) ||
+                book.isbn.toLowerCase().includes(searchTerm)
+            );
+            displayBooks(filteredBooks);
+        }
+
+        document.getElementById('addBookForm').addEventListener('submit', addBook);
+        displayBooks();
+    </script>
+</body>
+</html>

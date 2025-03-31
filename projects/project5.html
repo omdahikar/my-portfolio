@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamCap Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #2f3542;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .stream-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2f3542;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #videoStream {
+            width: 100%;
+            display: block;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .gallery-item video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .gallery-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .gallery-btn {
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .source-select {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .source-select select {
+            padding: 8px;
+            border-radius: 5px;
+            background: #2f3542;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #ff4757;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #2f3542;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal img, .modal video {
+            max-width: 100%;
+            max-height: 70vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>StreamCap Pro</h1>
+            <p>Record, Capture, Share</p>
+        </div>
+
+        <div class="source-select">
+            <!-- // Add to the source-select options -->
+            <select id="sourceSelect">
+                <option value="camera">Camera</option>
+                <option value="screen">Screen</option>
+                <option value="presentation">Presentation Mode</option>
+            </select>
+            
+            <!-- // Add after the controls div -->
+            <div class="presentation-controls" id="presentationControls" style="display: none;">
+                <button class="btn btn-secondary" id="prevSlide">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-secondary" id="nextSlide">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="slide-counter">Slide: <span id="slideCount">1</span></div>
+            </div>
+            
+            <!-- // Add to the style section
+            .presentation-controls {
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+                margin-top: 20px;
+                align-items: center;
+            }
+            
+            .slide-counter {
+                background: #2f3542;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            
+            // Add to the JavaScript section before startStream function
+            let currentSlide = 1;
+            const presentationControls = document.getElementById('presentationControls');
+            const slideCount = document.getElementById('slideCount');
+            const prevSlide = document.getElementById('prevSlide');
+            const nextSlide = document.getElementById('nextSlide');
+        
+            // Modify the startStream function
+            async function startStream(source) {
+                try {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+        
+                    if (source === 'camera') {
+                        stream = await navigator.mediaDevices.getUserMedia({ 
+                            video: true, 
+                            audio: true 
+                        });
+                        presentationControls.style.display = 'none';
+                    } else if (source === 'screen') {
+                        stream = await navigator.mediaDevices.getDisplayMedia({ 
+                            video: true,
+                            audio: true
+                        });
+                        presentationControls.style.display = 'none';
+                    } else if (source === 'presentation') {
+                        stream = await navigator.mediaDevices.getDisplayMedia({ 
+                            video: {
+                                cursor: "always"
+                            },
+                            audio: true
+                        });
+                        presentationControls.style.display = 'flex';
+                    }
+        
+                    videoStream.srcObject = stream;
+                } catch (err) {
+                    console.error('Error accessing media devices:', err);
+                }
+            }
+        
+            // Add event listeners for presentation controls
+            prevSlide.addEventListener('click', () => {
+                if (currentSlide > 1) {
+                    currentSlide--;
+                    slideCount.textContent = currentSlide;
+                    // Simulate left arrow key press for presentation
+                    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+                    document.dispatchEvent(event);
+                }
+            });
+        
+            nextSlide.addEventListener('click', () => {
+                currentSlide++;
+                slideCount.textContent = currentSlide;
+                // Simulate right arrow key press for presentation
+                const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+                document.dispatchEvent(event);
+            }); -->
+        </div>
+
+        <div class="stream-container">
+            <video id="videoStream" autoplay muted></video>
+            <div class="timer" id="timer" style="display: none">00:00</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="recordBtn">
+                <i class="fas fa-record-vinyl"></i> Start Recording
+            </button>
+            <button class="btn btn-secondary" id="screenshotBtn">
+                <i class="fas fa-camera"></i> Take Screenshot
+            </button>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let recordedChunks = [];
+        let stream;
+        let isRecording = false;
+        let timerInterval;
+        let startTime;
+
+        const videoStream = document.getElementById('videoStream');
+        const recordBtn = document.getElementById('recordBtn');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const sourceSelect = document.getElementById('sourceSelect');
+        const timer = document.getElementById('timer');
+        const gallery = document.getElementById('gallery');
+        const modal = document.getElementById('previewModal');
+
+        async function startStream(source) {
+            try {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+
+                if (source === 'camera') {
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true, 
+                        audio: true 
+                    });
+                } else {
+                    stream = await navigator.mediaDevices.getDisplayMedia({ 
+                        video: true,
+                        audio: true
+                    });
+                }
+
+                videoStream.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing media devices:', err);
+            }
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            timer.textContent = `${minutes}:${seconds}`;
+        }
+
+        function startRecording() {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                addToGallery(blob, 'video');
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            startTime = Date.now();
+            timer.style.display = 'block';
+            timerInterval = setInterval(updateTimer, 1000);
+            recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+            recordBtn.classList.add('recording');
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(timerInterval);
+            timer.style.display = 'none';
+            recordBtn.innerHTML = '<i class="fas fa-record-vinyl"></i> Start Recording';
+            recordBtn.classList.remove('recording');
+        }
+
+        function takeScreenshot() {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoStream.videoWidth;
+            canvas.height = videoStream.videoHeight;
+            canvas.getContext('2d').drawImage(videoStream, 0, 0);
+            canvas.toBlob(blob => {
+                addToGallery(blob, 'image');
+            }, 'image/png');
+        }
+
+        function addToGallery(blob, type) {
+            const url = URL.createObjectURL(blob);
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+
+            if (type === 'video') {
+                div.innerHTML = `
+                    <video src="${url}" controls></video>
+                    <div class="gallery-actions">
+                        <button class="gallery-btn" onclick="downloadMedia('${url}', 'video')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="gallery-btn" onclick="previewMedia('${url}', 'video')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="gallery-btn" onclick="deleteMedia(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <img src="${url}" alt="Screenshot">
+                    <div class="gallery-actions">
+                        <button class="gallery-btn" onclick="downloadMedia('${url}', 'image')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="gallery-btn" onclick="previewMedia('${url}', 'image')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="gallery-btn" onclick="deleteMedia(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            gallery.insertBefore(div, gallery.firstChild);
+        }
+
+        function downloadMedia(url, type) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `streamcap_${Date.now()}.${type === 'video' ? 'webm' : 'png'}`;
+            a.click();
+        }
+
+        function previewMedia(url, type) {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = type === 'video' 
+                ? `<video src="${url}" controls></video>`
+                : `<img src="${url}" alt="Preview">`;
+            modal.style.display = 'flex';
+        }
+
+        function deleteMedia(btn) {
+            btn.closest('.gallery-item').remove();
+        }
+
+        recordBtn.addEventListener('click', () => {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        screenshotBtn.addEventListener('click', takeScreenshot);
+
+        sourceSelect.addEventListener('change', () => {
+            startStream(sourceSelect.value);
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Start with camera stream
+        startStream('camera');
+    </script>
+</body>
+</html>
